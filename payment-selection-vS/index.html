@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulação de Seleção de Itens</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div class="container">
+        <h1>Minha Lista de Itens</h1>
+
+        <div class="toolbar">
+            <label class="select-all-label">
+                <input type="checkbox" id="select-all-on-page">
+                <span id="selection-status">Nenhum item selecionado</span>
+            </label>
+            <span id="select-all-message" class="hidden">
+                <a href="#">Selecionar todos os <strong>100</strong> itens</a>
+            </span>
+            <div class="action-buttons hidden">
+                <button id="delete-btn">Deletar</button>
+                <button id="deselect-btn">Desmarcar</button>
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>ID</th>
+                    <th>Título</th>
+                </tr>
+            </thead>
+            <tbody id="item-table-body">
+                </tbody>
+        </table>
+
+        <div class="pagination">
+            <button id="prev-btn" disabled>Anterior</button>
+            <span id="page-info">Página 1 de 10</span>
+            <button id="next-btn">Próximo</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
