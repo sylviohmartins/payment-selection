@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestão de Transações Financeiras</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <h1><i class="fas fa-credit-card"></i> Sistema de Gestão de Transações Financeiras</h1>
+            <div class="header-info">
+                <button id="theme-toggle" class="theme-toggle">
+                    <i class="fas fa-moon"></i>
+                    <span>Modo Escuro</span>
+                </button>
+                <span id="connection-status" class="status-indicator">
+                    <i class="fas fa-circle"></i> Conectado
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Filters Section -->
+            <section class="filters-section">
+                <div class="filters-card">
+                    <h2><i class="fas fa-filter"></i> Filtros</h2>
+                    <div class="filters-grid">
+                        <div class="filter-group">
+                            <label for="status-filter">Status:</label>
+                            <select id="status-filter">
+                                <option value="A_PAGAR">A Pagar</option>
+                                <option value="PAID">Pago</option>
+                                <option value="CANCELLED">Cancelado</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="vencimento-filter">Vencimento até:</label>
+                            <input type="date" id="vencimento-filter" value="2024-12-31">
+                        </div>
+                        <div class="filter-group">
+                            <button id="apply-filters-btn" class="btn btn-primary">
+                                <i class="fas fa-search"></i> Aplicar Filtros
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Selection Info -->
+            <section class="selection-info" id="selection-info" style="display: none;">
+                <div class="info-card">
+                    <div class="info-content">
+                        <span id="selection-count">0 itens selecionados</span>
+                        <span class="selection-id">ID: <span id="current-selection-id">-</span></span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Table Section -->
+            <section class="table-section">
+                <div class="table-card">
+                    <div class="table-header">
+                        <h2><i class="fas fa-table"></i> Pagamentos</h2>
+                        <div class="table-actions">
+                            <button id="refresh-btn" class="btn btn-secondary">
+                                <i class="fas fa-sync-alt"></i> Atualizar
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Loading State -->
+                    <div id="loading-state" class="loading-state">
+                        <div class="spinner"></div>
+                        <p>Carregando pagamentos...</p>
+                    </div>
+
+                    <!-- Table Container -->
+                    <div id="table-container" class="table-container" style="display: none;">
+                        <table class="payments-table">
+                            <thead>
+                                <tr>
+                                    <th class="checkbox-column">
+                                        <input type="checkbox" id="select-all-page" title="Selecionar todos da página">
+                                    </th>
+                                    <th class="sortable" data-column="id">
+                                        ID <i class="fas fa-sort"></i>
+                                    </th>
+                                    <th class="sortable" data-column="descricao">
+                                        Descrição <i class="fas fa-sort"></i>
+                                    </th>
+                                    <th class="sortable" data-column="valor">
+                                        Valor <i class="fas fa-sort"></i>
+                                    </th>
+                                    <th class="sortable" data-column="vencimento">
+                                        Vencimento <i class="fas fa-sort"></i>
+                                    </th>
+                                    <th class="sortable" data-column="status">
+                                        Status <i class="fas fa-sort"></i>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="payments-tbody">
+                                <!-- Dados serão inseridos dinamicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="pagination-container">
+                        <div class="pagination-info">
+                            <span id="pagination-info">Mostrando 0 de 0 itens</span>
+                        </div>
+                        <div class="pagination-controls">
+                            <button id="prev-page" class="btn btn-secondary" disabled>
+                                <i class="fas fa-chevron-left"></i> Anterior
+                            </button>
+                            <span class="page-numbers" id="page-numbers">
+                                <!-- Números das páginas serão inseridos dinamicamente -->
+                            </span>
+                            <button id="next-page" class="btn btn-secondary" disabled>
+                                Próxima <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Action Buttons -->
+            <section class="action-buttons" id="action-buttons" style="display: none;">
+                <div class="buttons-container">
+                    <button id="select-all-btn" class="btn btn-success">
+                        <i class="fas fa-check-double"></i> Marcar Todos os Pagamentos
+                    </button>
+                    <button id="deselect-all-btn" class="btn btn-warning">
+                        <i class="fas fa-times"></i> Desmarcar Todos os Pagamentos
+                    </button>
+                    <button id="continue-btn" class="btn btn-primary" disabled>
+                        <i class="fas fa-arrow-right"></i> Continuar
+                    </button>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Processing Modal -->
+    <div id="processing-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-cog fa-spin"></i> Processando Pagamentos</h2>
+            </div>
+            <div class="modal-body">
+                <div class="processing-info">
+                    <p>Processando <span id="processing-count">0</span> pagamentos selecionados...</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill"></div>
+                    </div>
+                    <div class="progress-text">
+                        <span id="progress-percentage">0%</span>
+                        <span id="progress-status">Iniciando processamento...</span>
+                    </div>
+                </div>
+                <div id="processing-results" class="processing-results" style="display: none;">
+                    <h3><i class="fas fa-check-circle"></i> Processamento Concluído</h3>
+                    <div class="results-summary">
+                        <div class="result-item">
+                            <span class="result-label">Pagamentos processados:</span>
+                            <span class="result-value" id="processed-count">0</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Status:</span>
+                            <span class="result-value success" id="processing-final-status">Sucesso</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Tempo de processamento:</span>
+                            <span class="result-value" id="processing-time">0s</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="close-modal-btn" class="btn btn-secondary" style="display: none;">
+                    <i class="fas fa-times"></i> Fechar
+                </button>
+                <button id="new-selection-btn" class="btn btn-primary" style="display: none;">
+                    <i class="fas fa-plus"></i> Nova Seleção
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error Toast -->
+    <div id="error-toast" class="toast error-toast">
+        <div class="toast-content">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span id="error-message">Erro desconhecido</span>
+        </div>
+        <button class="toast-close" onclick="hideErrorToast()">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
+    <!-- Success Toast -->
+    <div id="success-toast" class="toast success-toast">
+        <div class="toast-content">
+            <i class="fas fa-check-circle"></i>
+            <span id="success-message">Operação realizada com sucesso</span>
+        </div>
+        <button class="toast-close" onclick="hideSuccessToast()">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>
+
